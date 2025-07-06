@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>app.svg</file>
+        <file>open.svg</file>
+        <file>close.svg</file>
+        <file>print.svg</file>
+        <file>zoom_in.svg</file>
+        <file>zoom_out.svg</file>
+        <file>fit_width.svg</file>
+        <file>fit_page.svg</file>
+        <file>next_page.svg</file>
+        <file>previous_page.svg</file>
+    </qresource>
+</RCC>

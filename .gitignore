@@ -1,0 +1,48 @@
+# Build directories
+build/
+cmake-build-*/
+out/
+
+# Qt generated files
+*.pro.user
+*.pro.user.*
+*.qmlc
+*.jsc
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.moc
+
+# Compiled binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.a
+*.lib
+
+# IDE files
+.vscode/
+.idea/
+*.vcxproj*
+*.sln
+*.suo
+*.user
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Package managers
+vcpkg_installed/
+conan/
+
+# Keep SVG icons
+!resources/*.svg

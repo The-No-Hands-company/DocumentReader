@@ -1,0 +1,89 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "windows-msvc-debug",
+            "displayName": "Windows MSVC Debug",
+            "description": "Debug build using MSVC compiler",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/build/windows-msvc-debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "windows-msvc-release",
+            "displayName": "Windows MSVC Release",
+            "description": "Release build using MSVC compiler",
+            "generator": "Visual Studio 17 2022",
+            "binaryDir": "${sourceDir}/build/windows-msvc-release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "linux-gcc-debug",
+            "displayName": "Linux GCC Debug",
+            "description": "Debug build using GCC compiler",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build/linux-gcc-debug",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        },
+        {
+            "name": "linux-gcc-release",
+            "displayName": "Linux GCC Release",
+            "description": "Release build using GCC compiler",
+            "generator": "Unix Makefiles",
+            "binaryDir": "${sourceDir}/build/linux-gcc-release",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "windows-msvc-debug",
+            "configurePreset": "windows-msvc-debug",
+            "configuration": "Debug"
+        },
+        {
+            "name": "windows-msvc-release",
+            "configurePreset": "windows-msvc-release",
+            "configuration": "Release"
+        },
+        {
+            "name": "linux-gcc-debug",
+            "configurePreset": "linux-gcc-debug"
+        },
+        {
+            "name": "linux-gcc-release",
+            "configurePreset": "linux-gcc-release"
+        }
+    ]
+}
