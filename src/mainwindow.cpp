@@ -20,6 +20,7 @@
 #include <QProgressBar>
 #include <QLabel>
 #include <QStandardPaths>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -134,6 +135,21 @@ void MainWindow::createMenus()
 {
     m_fileMenu = menuBar()->addMenu("&File");
     m_fileMenu->addAction(m_openAction);
+    
+    // Recent files submenu
+    m_recentFilesMenu = m_fileMenu->addMenu("Recent &Files");
+    for (int i = 0; i < MaxRecentFiles; ++i) {
+        m_recentFileActions[i] = new QAction(this);
+        m_recentFileActions[i]->setVisible(false);
+        connect(m_recentFileActions[i], &QAction::triggered, this, &MainWindow::openRecentFile);
+        m_recentFilesMenu->addAction(m_recentFileActions[i]);
+    }
+    m_recentFilesMenu->addSeparator();
+    m_clearRecentAction = m_recentFilesMenu->addAction("&Clear Recent Files");
+    connect(m_clearRecentAction, &QAction::triggered, this, &MainWindow::clearRecentFiles);
+    
+    updateRecentFilesMenu();
+    
     m_fileMenu->addAction(m_closeAction);
     m_fileMenu->addSeparator();
     m_fileMenu->addAction(m_printAction);
@@ -221,6 +237,9 @@ void MainWindow::openDocument()
             setWindowTitle(QString("Document Reader - %1").arg(QFileInfo(fileName).fileName()));
             updateActions();
             updateStatusBar();
+            
+            // Add to recent files
+            addToRecentFiles(fileName);
         } else {
             QMessageBox::warning(this, "Error", "Failed to load document");
         }
@@ -324,17 +343,64 @@ void MainWindow::updateActions()
     m_previousPageAction->setEnabled(hasDocument);
 }
 
-void MainWindow::updateStatusBar()
+// Recent files implementation
+void MainWindow::openRecentFile()
 {
-    if (m_document) {
-        int currentPage = m_documentViewer->currentPage() + 1; // Convert to 1-based
-        int totalPages = m_document->pageCount();
-        m_pageLabel->setText(QString("Page %1 of %2").arg(currentPage).arg(totalPages));
-        
-        int zoom = static_cast<int>(m_documentViewer->zoomFactor() * 100);
-        m_zoomLabel->setText(QString("%1%").arg(zoom));
-    } else {
-        m_pageLabel->setText("No document");
-        m_zoomLabel->setText("100%");
+    QAction* action = qobject_cast<QAction*>(sender());
+    if (action) {
+        QString fileName = action->data().toString();
+        openDocumentFile(fileName);
     }
+}
+
+void MainWindow::clearRecentFiles()
+{
+    QSettings settings;
+    settings.remove("recentFiles");
+    updateRecentFilesMenu();
+}
+
+void MainWindow::updateRecentFilesMenu()
+{
+    QStringList files = getRecentFiles();
+    
+    int numRecentFiles = qMin(files.size(), static_cast<int>(MaxRecentFiles));
+    
+    for (int i = 0; i < numRecentFiles; ++i) {
+        QString text = QString("&%1 %2").arg(i + 1).arg(QFileInfo(files[i]).fileName());
+        m_recentFileActions[i]->setText(text);
+        m_recentFileActions[i]->setData(files[i]);
+        m_recentFileActions[i]->setVisible(true);
+    }
+    
+    for (int i = numRecentFiles; i < MaxRecentFiles; ++i) {
+        m_recentFileActions[i]->setVisible(false);
+    }
+    
+    m_recentFilesMenu->setEnabled(numRecentFiles > 0);
+    m_clearRecentAction->setEnabled(numRecentFiles > 0);
+}
+
+void MainWindow::addToRecentFiles(const QString& fileName)
+{
+    QStringList files = getRecentFiles();
+    files.removeAll(fileName);
+    files.prepend(fileName);
+    while (files.size() > MaxRecentFiles) {
+        files.removeLast();
+    }
+    setRecentFiles(files);
+    updateRecentFilesMenu();
+}
+
+QStringList MainWindow::getRecentFiles() const
+{
+    QSettings settings;
+    return settings.value("recentFiles").toStringList();
+}
+
+void MainWindow::setRecentFiles(const QStringList& files)
+{
+    QSettings settings;
+    settings.setValue("recentFiles", files);
 }

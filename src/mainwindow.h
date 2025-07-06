@@ -14,6 +14,8 @@
 #include <QMessageBox>
 #include <QScrollArea>
 #include <QDockWidget>
+#include <QSettings>
+#include <QStringList>
 #include <memory>
 
 QT_BEGIN_NAMESPACE
@@ -46,6 +48,10 @@ private slots:
     void nextPage();
     void previousPage();
     void showAbout();
+    
+    // Recent files
+    void openRecentFile();
+    void clearRecentFiles();
 
 private:
     void createActions();
@@ -86,6 +92,11 @@ private:
     
     QAction* m_aboutAction;
     
+    // Recent files
+    QMenu* m_recentFilesMenu;
+    QAction* m_clearRecentAction;
+    QAction* m_recentFileActions[10];  // Support up to 10 recent files
+    
     // Toolbars
     QToolBar* m_mainToolBar;
     QToolBar* m_viewToolBar;
@@ -98,4 +109,16 @@ private:
     // Document
     std::unique_ptr<DocumentReader> m_document;
     QString m_currentFile;
+
+    // Recent files
+    QStringList m_recentFiles;
+    QAction* m_recentFilesActions[5]; // Assuming a maximum of 5 recent files
+
+    // Recent files management
+    void updateRecentFilesMenu();
+    void addToRecentFiles(const QString& fileName);
+    QStringList getRecentFiles() const;
+    void setRecentFiles(const QStringList& files);
+    
+    static const int MaxRecentFiles = 10;
 };
